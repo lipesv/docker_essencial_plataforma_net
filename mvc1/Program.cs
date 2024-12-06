@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using mvc1.Models;
 
 internal class Program
@@ -6,14 +7,26 @@ internal class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
+        IConfiguration configuration = builder.Configuration;
+
         builder.Services.AddControllersWithViews();
 
+        builder.Services.AddSingleton<IConfiguration>(configuration);
         builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        builder.Services.AddTransient<IRepository, ProdutoRepository>();
 
-        builder.Services.AddTransient<IRepository, TesteRepository>();
+        var host = Environment.GetEnvironmentVariable("MYSQL_HOST");
+        var pass = Environment.GetEnvironmentVariable("MYSQL_PASSWORD");
+
+        var connStr = $"Server={host};Database=produtosdb;User ID=root;Password={pass};";
+
+        builder.Services.AddDbContext<AppDbContext>(options =>
+            options.UseMySql(connStr, ServerVersion.AutoDetect(connStr))
+        );
 
         var app = builder.Build();
+
+        Populadb.IncluiDadosDB(app);
 
         // Configure the HTTP request pipeline.
         if (!app.Environment.IsDevelopment())

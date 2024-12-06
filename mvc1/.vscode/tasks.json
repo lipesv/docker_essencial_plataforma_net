@@ -1,0 +1,56 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/mvc1.sln",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary;ForceNoAlign"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "clean-publish",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "Get-ChildItem -Path '${workspaceFolder}\\mvc1\\publish' -Recurse | Remove-Item -Recurse -Force"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "publish",
+      "command": "dotnet",
+      "type": "process",
+      "dependsOn": "clean-publish", // Run the clean task first
+      "args": [
+        "publish",
+        "${workspaceFolder}/mvc1/mvc1.csproj",
+        "-c",
+        "Release",
+        "-o",
+        "${workspaceFolder}/mvc1/publish"
+      ],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "watch",
+      "command": "dotnet",
+      "type": "process",
+      "args": ["watch", "run", "--project", "${workspaceFolder}/mvc1.sln"],
+      "problemMatcher": "$msCompile"
+    }
+  ]
+}

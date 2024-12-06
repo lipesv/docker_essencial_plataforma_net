@@ -4,6 +4,13 @@ namespace mvc1.Models
     {
         public Produto() { }
 
+        public Produto(string nome, string categoria, decimal preco)
+        {
+            Nome = nome;
+            Categoria = categoria;
+            Preco = preco;
+        }
+
         public Produto(int id, string nome, string categoria, decimal preco)
         {
             ProdutoId = id;
