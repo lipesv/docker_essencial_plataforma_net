@@ -1,0 +1,37 @@
+services:
+  mysql:
+    image: 'mysql'
+    volumes:
+      - produtosdb:/var/lib/mysql
+      - ./_MySQL_Init_Script:/docker-entrypoint-initdb.d
+    networks:
+      - backend
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  mvc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - backend
+      - frontend
+    environment:
+      - MYSQL_SERVER=mysql
+      - MYSQL_DATABASE=produtosdb
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=secret
+    ports:
+      - 5000:8080
+    depends_on:
+      mysql:
+        condition: service_healthy
+volumes:
+  produtosdb:
+networks:
+  frontend:
+  backend:

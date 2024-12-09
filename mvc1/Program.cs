@@ -15,18 +15,18 @@ internal class Program
         builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         builder.Services.AddTransient<IRepository, ProdutoRepository>();
 
-        var host = Environment.GetEnvironmentVariable("MYSQL_HOST");
-        var pass = Environment.GetEnvironmentVariable("MYSQL_PASSWORD");
+        var server = Environment.GetEnvironmentVariable("MYSQL_SERVER");
+        var database = Environment.GetEnvironmentVariable("MYSQL_DATABASE");
+        var user = Environment.GetEnvironmentVariable("MYSQL_USER");
+        var password = Environment.GetEnvironmentVariable("MYSQL_PASSWORD");
 
-        var connStr = $"Server={host};Database=produtosdb;User ID=root;Password={pass};";
+        var connectionString = $"Server={server};Database={database};User ID={user};Password={password};";
 
         builder.Services.AddDbContext<AppDbContext>(options =>
-            options.UseMySql(connStr, ServerVersion.AutoDetect(connStr))
+            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
         );
 
         var app = builder.Build();
-
-        Populadb.IncluiDadosDB(app);
 
         // Configure the HTTP request pipeline.
         if (!app.Environment.IsDevelopment())
