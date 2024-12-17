@@ -11,4 +11,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\EFCoreDocker.CrossCutting\EFCoreDocker.CrossCutting.csproj" />
+    <ProjectReference Include="..\EFCoreDocker.Application\EFCoreDocker.Application.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFCoreDocker.Data", "EFCore
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFCoreDocker.CrossCutting", "EFCoreDocker.CrossCutting\EFCoreDocker.CrossCutting.csproj", "{69844CB4-9DD8-455A-9CF4-6EEB68B88630}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFCoreDocker.Application", "EFCoreDocker.Application\EFCoreDocker.Application.csproj", "{ACCB1B55-B7D0-4A42-94C7-9133ED96551A}"
+EndProject
 Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -72,5 +74,17 @@ Global
 		{69844CB4-9DD8-455A-9CF4-6EEB68B88630}.Release|x64.Build.0 = Release|Any CPU
 		{69844CB4-9DD8-455A-9CF4-6EEB68B88630}.Release|x86.ActiveCfg = Release|Any CPU
 		{69844CB4-9DD8-455A-9CF4-6EEB68B88630}.Release|x86.Build.0 = Release|Any CPU
+		{ACCB1B55-B7D0-4A42-94C7-9133ED96551A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACCB1B55-B7D0-4A42-94C7-9133ED96551A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACCB1B55-B7D0-4A42-94C7-9133ED96551A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{ACCB1B55-B7D0-4A42-94C7-9133ED96551A}.Debug|x64.Build.0 = Debug|Any CPU
+		{ACCB1B55-B7D0-4A42-94C7-9133ED96551A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ACCB1B55-B7D0-4A42-94C7-9133ED96551A}.Debug|x86.Build.0 = Debug|Any CPU
+		{ACCB1B55-B7D0-4A42-94C7-9133ED96551A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACCB1B55-B7D0-4A42-94C7-9133ED96551A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACCB1B55-B7D0-4A42-94C7-9133ED96551A}.Release|x64.ActiveCfg = Release|Any CPU
+		{ACCB1B55-B7D0-4A42-94C7-9133ED96551A}.Release|x64.Build.0 = Release|Any CPU
+		{ACCB1B55-B7D0-4A42-94C7-9133ED96551A}.Release|x86.ActiveCfg = Release|Any CPU
+		{ACCB1B55-B7D0-4A42-94C7-9133ED96551A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

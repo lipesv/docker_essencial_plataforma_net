@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EFCoreDocker.Data\EFCoreDocker.Data.csproj" />
+    <ProjectReference Include="..\EFCoreDocker.Application\EFCoreDocker.Application.csproj" />
   </ItemGroup>
 
 </Project>
