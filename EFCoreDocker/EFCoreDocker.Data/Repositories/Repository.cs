@@ -1,9 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using EFCoreDocker.Data.Repositories.Interfaces;
+using EFCoreDocker.Domain.Entities.Base;
 
 namespace EFCoreDocker.Data.Repositories
 {
-    public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
+    public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEntity
     {
         private readonly DbContext _context;
         private readonly DbSet<TEntity> _set;
@@ -26,18 +27,55 @@ namespace EFCoreDocker.Data.Repositories
 
         public async Task Add(TEntity entity)
         {
-            await _set.AddAsync(entity);
+            try
+            {
+                await _set.AddAsync(entity);
+                await _context.SaveChangesAsync();
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
         }
 
-        public async Task Update(TEntity entity)
+        public async Task<TEntity> Update(TEntity entity)
         {
-            _context.Entry(entity).State = EntityState.Modified;
+            try
+            {
+                var currentEntity = await _set.SingleOrDefaultAsync(e => e.Id.Equals(entity.Id));
+
+                if (currentEntity == null)
+                    return null;
+
+                _set.Entry(currentEntity).CurrentValues.SetValues(entity);
+                await _context.SaveChangesAsync();
+
+                return entity;
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
         }
 
-        public async Task Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            var entity = await _set.FindAsync(id);
-            _set.Remove(entity);
+            try
+            {
+                var entity = await _set.FindAsync(id);
+
+                if (entity == null)
+                    return false;
+
+                _set.Remove(entity);
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
         }
     }
 }

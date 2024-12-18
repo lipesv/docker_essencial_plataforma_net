@@ -5,7 +5,7 @@ namespace EFCoreDocker.Data.Repositories.Interfaces
         Task<TEntity> GetById(int id);
         Task<IEnumerable<TEntity>> GetAll();
         Task Add(TEntity entity);
-        Task Update(TEntity entity);
-        Task Delete(int id);
+        Task<TEntity> Update(TEntity entity);
+        Task<bool> Delete(int id);
     }
 }

@@ -6,6 +6,7 @@ namespace EFCoreDocker.Data.Context
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext() { }
+        
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
             this.Database.EnsureCreated();

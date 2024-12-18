@@ -27,56 +27,22 @@ namespace EFCoreDocker.Application.Services
 
         public async Task<Product> GetById(int id)
         {
-            try
-            {
-                return await _unitOfWork.Repository<Product>().GetById(id);
-            }
-            catch (System.Exception)
-            {
-                throw;
-            }
+            return await _unitOfWork.Repository<Product>().GetById(id);
         }
 
         public async Task Create(Product product)
         {
-            try
-            {
-                await _unitOfWork.Repository<Product>().Add(product);
-                await _unitOfWork.Commit();
-            }
-            catch (System.Exception)
-            {
-                _unitOfWork.Rollback();
-                throw;
-            }
+            await _unitOfWork.Repository<Product>().Add(product);
         }
 
-        public async Task Update(Product product)
+        public async Task<Product> Update(Product product)
         {
-            try
-            {
-                await _unitOfWork.Repository<Product>().Update(product);
-                await _unitOfWork.Commit();
-            }
-            catch (System.Exception)
-            {
-                _unitOfWork.Rollback();
-                throw;
-            }
+            return await _unitOfWork.Repository<Product>().Update(product);
         }
 
-        public async Task Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            try
-            {
-                await _unitOfWork.Repository<Product>().Delete(id);
-                await _unitOfWork.Commit();
-            }
-            catch (System.Exception)
-            {
-                _unitOfWork.Rollback();
-                throw;
-            }
+            return await _unitOfWork.Repository<Product>().Delete(id);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace EFCoreDocker.API.Controllers
             _productService = productService;
         }
 
-        [HttpGet("IEnumerable<TModel>")]
+        [HttpGet]
         public async Task<IActionResult> Get()
         {
             return Ok(await _productService.GetAll());
@@ -44,22 +44,21 @@ namespace EFCoreDocker.API.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Product product)
+        [HttpPut]
+        public async Task<IActionResult> Update([FromBody] Product product)
         {
             try
             {
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
 
-                var actual = await _productService.GetById(id);
+                var result = await _productService.Update(product);
 
-                if (actual == null)
+                if (result == null)
                     return NotFound();
 
-                await _productService.Update(product);
-
                 return Ok(product);
+
             }
             catch (System.Exception ex)
             {
@@ -72,14 +71,12 @@ namespace EFCoreDocker.API.Controllers
         {
             try
             {
-                var product = await _productService.GetById(id);
+                var result = await _productService.Delete(id);
 
-                if (product == null)
+                if (result)
+                    return Ok("Product deleted");
+                else
                     return NotFound();
-
-                await _productService.Delete(id);
-
-                return Ok("Product deleted");
             }
             catch (System.Exception ex)
             {

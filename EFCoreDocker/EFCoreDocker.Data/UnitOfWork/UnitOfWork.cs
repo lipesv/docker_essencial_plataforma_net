@@ -1,5 +1,6 @@
 using EFCoreDocker.Data.Context;
 using EFCoreDocker.Data.Repositories.Interfaces;
+using EFCoreDocker.Domain.Entities.Base;
 using Microsoft.EntityFrameworkCore;
 
 namespace EFCoreDocker.Data.Repositories
@@ -32,7 +33,7 @@ namespace EFCoreDocker.Data.Repositories
             }
         }
 
-        public IRepository<T> Repository<T>() where T : class
+        public IRepository<T> Repository<T>() where T : BaseEntity
         {
             return new Repository<T>(_dbContext);
         }

@@ -1,15 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using EFCoreDocker.Domain.Entities.Base;
 
 namespace EFCoreDocker.Domain.Entities
 {
-    public class Product
+    public class Product : BaseEntity
     {
-        public int Id { get; set;}
-        public string Name { get; set;}
-        public decimal Price { get; set;}
-        public string Descpription{ get; set;}
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public string Description { get; set; }
     }
 }
