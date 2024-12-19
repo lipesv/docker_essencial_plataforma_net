@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ProductCatalog.CrossCutting\ProductCatalog.CrossCutting.csproj" />
+    <ProjectReference Include="..\ProductCatalog.Application\ProductCatalog.Application.csproj" />
   </ItemGroup>
 
 </Project>

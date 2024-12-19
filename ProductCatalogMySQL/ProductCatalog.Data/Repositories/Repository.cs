@@ -30,7 +30,6 @@ namespace ProductCatalog.Data.Repositories
             try
             {
                 await _set.AddAsync(entity);
-                await _context.SaveChangesAsync();
             }
             catch (System.Exception)
             {
@@ -52,6 +51,17 @@ namespace ProductCatalog.Data.Repositories
 
                 return entity;
             }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ProductExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
             catch (System.Exception)
             {
                 throw;
@@ -68,8 +78,7 @@ namespace ProductCatalog.Data.Repositories
                     return false;
 
                 _set.Remove(entity);
-                await _context.SaveChangesAsync();
-
+                
                 return true;
             }
             catch (System.Exception)

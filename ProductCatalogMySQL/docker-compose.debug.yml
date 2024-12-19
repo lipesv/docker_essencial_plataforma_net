@@ -1,0 +1,33 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP.NET Core service.
+
+version: '3.4'
+
+services:
+  productcatalogapi:
+    container_name: api_product_mysql
+    image: api_product_mysql:dev
+    build:
+      context: .
+      dockerfile: ProductCatalog.API/Dockerfile
+      args:
+        - configuration=Debug
+    ports:
+      - 5264:5264
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - db_uid=root
+      - db_pwd=secret
+      - db=ProductsDb
+    volumes:
+      - ~/.vsdbg:/remote_debugger:rw
+    depends_on:
+      - db
+  db:
+    image: mysql
+    container_name: db_dev
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+    volumes:
+      - db_data:/var/lib/mysql
+volumes:
+  db_data:

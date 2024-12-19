@@ -1,0 +1,111 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "docker-compose-up",
+			"type": "shell",
+			"command": "docker-compose",
+			"args": [
+				"-f",
+				"${input:dockerComposeFile}", // Prompt for the custom file
+				"up",
+				"--build",
+				"-d" // Run in detached mode
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "docker-compose-down",
+			"type": "shell",
+			"command": "docker-compose",
+			"args": [
+				"down",
+				"-v" // Remove all associated volumes
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "build",
+			"type": "shell",
+			"command": "msbuild",
+			"args": [
+				"/property:GenerateFullPaths=true",
+				"/t:build",
+				"/consoleloggerparameters:NoSummary"
+			],
+			"group": "build",
+			"presentation": {
+				"reveal": "silent"
+			},
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"type": "docker-build",
+			"label": "docker-build: debug",
+			"dependsOn": [
+				"build"
+			],
+			"dockerBuild": {
+				"tag": "productcatalogmysql:dev",
+				"target": "base",
+				"dockerfile": "${workspaceFolder}/ProductCatalog.API/Dockerfile",
+				"context": "${workspaceFolder}",
+				"pull": true
+			},
+			"netCore": {
+				"appProject": "${workspaceFolder}/ProductCatalog.API/ProductCatalog.API.csproj"
+			}
+		},
+		{
+			"type": "docker-build",
+			"label": "docker-build: release",
+			"dependsOn": [
+				"build"
+			],
+			"dockerBuild": {
+				"tag": "productcatalogmysql:latest",
+				"dockerfile": "${workspaceFolder}/ProductCatalog.API/Dockerfile",
+				"context": "${workspaceFolder}",
+				"platform": {
+					"os": "linux",
+					"architecture": "amd64"
+				},
+				"pull": true
+			},
+			"netCore": {
+				"appProject": "${workspaceFolder}/ProductCatalog.API/ProductCatalog.API.csproj"
+			}
+		},
+		{
+			"type": "docker-run",
+			"label": "docker-run: debug",
+			"dependsOn": [
+				"docker-build: debug"
+			],
+			"dockerRun": {},
+			"netCore": {
+				"appProject": "${workspaceFolder}/ProductCatalog.API/ProductCatalog.API.csproj",
+				"enableDebugging": true
+			}
+		},
+		{
+			"type": "docker-run",
+			"label": "docker-run: release",
+			"dependsOn": [
+				"docker-build: release"
+			],
+			"dockerRun": {},
+			"netCore": {
+				"appProject": "${workspaceFolder}/ProductCatalog.API/ProductCatalog.API.csproj"
+			}
+		}
+	],
+	"inputs": [
+		{
+			"id": "dockerComposeFile",
+			"type": "promptString",
+			"description": "Enter the path to your docker-compose file",
+			"default": "docker-compose.yaml"
+		}
+	]
+}

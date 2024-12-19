@@ -33,6 +33,7 @@ namespace ProductCatalog.Application.Services
         public async Task Create(Product product)
         {
             await _unitOfWork.Repository<Product>().Add(product);
+            await _unitOfWork.Commit();
         }
 
         public async Task<Product> Update(Product product)
@@ -42,7 +43,10 @@ namespace ProductCatalog.Application.Services
 
         public async Task<bool> Delete(int id)
         {
-            return await _unitOfWork.Repository<Product>().Delete(id);
+            var result = await _unitOfWork.Repository<Product>().Delete(id);
+            await _unitOfWork.Commit();
+
+            return result;
         }
     }
 }
