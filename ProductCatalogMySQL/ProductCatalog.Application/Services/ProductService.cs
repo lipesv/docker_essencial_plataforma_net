@@ -1,5 +1,5 @@
 using ProductCatalog.Application.Services.Interfaces;
-using ProductCatalog.Data.UnitOfWork.Interfaces;
+using ProductCatalog.Domain.Core.Interfaces.UnitOfWork;
 using ProductCatalog.Domain.Entities;
 
 namespace ProductCatalog.Application.Services
@@ -17,7 +17,7 @@ namespace ProductCatalog.Application.Services
         {
             try
             {
-                return await _unitOfWork.Repository<Product>().GetAll();
+                return await _unitOfWork.GetRepository<Product>().GetAllAsync();
             }
             catch (System.Exception)
             {
@@ -27,26 +27,45 @@ namespace ProductCatalog.Application.Services
 
         public async Task<Product> GetById(int id)
         {
-            return await _unitOfWork.Repository<Product>().GetById(id);
+            return await _unitOfWork.GetRepository<Product>().GetAsync(id);
         }
 
         public async Task Create(Product product)
         {
-            await _unitOfWork.Repository<Product>().Add(product);
-            await _unitOfWork.Commit();
+            _unitOfWork.GetRepository<Product>().Add(product);
+            await _unitOfWork.CommitAsync();
         }
 
-        public async Task<Product> Update(Product product)
+        public async Task<bool> Update(Product product)
         {
-            return await _unitOfWork.Repository<Product>().Update(product);
+            if (await _unitOfWork.GetRepository<Product>().Exists(p => p.Id == product.Id))
+            {
+                _unitOfWork.GetRepository<Product>().Update(product);
+                await _unitOfWork.CommitAsync();
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public async Task<bool> Delete(int id)
         {
-            var result = await _unitOfWork.Repository<Product>().Delete(id);
-            await _unitOfWork.Commit();
+            var entityToDelete = await _unitOfWork.GetRepository<Product>().GetAsync(id);
 
-            return result;
+            if (entityToDelete != null)
+            {
+                _unitOfWork.GetRepository<Product>().Remove(entityToDelete);
+                await _unitOfWork.CommitAsync();
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

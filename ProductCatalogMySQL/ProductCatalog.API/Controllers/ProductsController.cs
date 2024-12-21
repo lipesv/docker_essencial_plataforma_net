@@ -15,7 +15,7 @@ namespace ProductCatalog.API.Controllers
             _productService = productService;
         }
 
-        [HttpGet("")]
+        [HttpGet]
         public async Task<IActionResult> Get()
         {
             // TODO: Your code here
@@ -34,7 +34,7 @@ namespace ProductCatalog.API.Controllers
                 return Ok(product);
         }
 
-        [HttpPost("")]
+        [HttpPost]
         public async Task<IActionResult> Post([FromBody] Product product)
         {
             try
@@ -62,7 +62,7 @@ namespace ProductCatalog.API.Controllers
 
                 var result = await _productService.Update(product);
 
-                if (result == null)
+                if (!result)
                     return NotFound();
 
                 return Ok(product);
@@ -81,10 +81,10 @@ namespace ProductCatalog.API.Controllers
             {
                 var result = await _productService.Delete(id);
 
-                if (result)
-                    return Ok("Product deleted");
-                else
+                if (!result)
                     return NotFound();
+
+                return Ok("Product deleted");
             }
             catch (System.Exception ex)
             {

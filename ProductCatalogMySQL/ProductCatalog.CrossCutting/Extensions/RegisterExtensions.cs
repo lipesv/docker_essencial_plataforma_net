@@ -3,11 +3,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ProductCatalog.Application.Services;
 using ProductCatalog.Application.Services.Interfaces;
-using ProductCatalog.Data.Context;
-using ProductCatalog.Data.Repositories;
-using ProductCatalog.Data.Repositories.Interfaces;
-using ProductCatalog.Data.UnitOfWork;
-using ProductCatalog.Data.UnitOfWork.Interfaces;
+using ProductCatalog.Domain.Core.Interfaces.Repositories;
+using ProductCatalog.Domain.Core.Interfaces.UnitOfWork;
+using ProductCatalog.Infrastructure.Context;
+using ProductCatalog.Infrastructure.Repositories.Base;
+using ProductCatalog.Infrastructure.UnitOfWork;
 
 namespace ProductCatalog.CrossCutting.Extensions
 {
@@ -26,15 +26,16 @@ namespace ProductCatalog.CrossCutting.Extensions
             return this;
         }
 
-        public ServiceCollectionBuilder AddServices()
+        public ServiceCollectionBuilder AddInjections()
         {
+            _services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             _services.AddTransient<IProductService, ProductService>();
-            _services.AddScoped<IUnitOfWork, UnitOfWork>();
-            _services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            _services.AddTransient<IUnitOfWork, UnitOfWork>();
+
             return this;
         }
 
-        public ServiceCollectionBuilder AddDataBaseContext(string connectionString)
+        public ServiceCollectionBuilder AddDbContexts(string connectionString)
         {
             var connStr = string.Format(connectionString,
                                         args: [
@@ -57,14 +58,14 @@ namespace ProductCatalog.CrossCutting.Extensions
         }
     }
 
-    public static class ServiceCollectionExtension
+    public static class RegisterExtensions
     {
         public static void AddServices(this IServiceCollection services, IConfiguration configuration)
         {
             new ServiceCollectionBuilder(services)
                 .AddConfiguration(configuration)
-                .AddServices()
-                .AddDataBaseContext(configuration.GetConnectionString("DefaultConnection"))
+                .AddInjections()
+                .AddDbContexts(configuration.GetConnectionString("DefaultConnection"))
                 .Build();
         }
     }

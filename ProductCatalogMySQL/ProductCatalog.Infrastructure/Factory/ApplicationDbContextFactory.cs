@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+using ProductCatalog.Infrastructure.Context;
 
-namespace ProductCatalog.Data.Context.Factory
+namespace ProductCatalog.Infrastructure.Factory
 {
     public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
     {
