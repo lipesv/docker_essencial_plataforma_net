@@ -15,30 +15,29 @@ namespace ProductCatalog.Application.Services
 
         public async Task<IEnumerable<Product>> GetAll()
         {
-            try
-            {
-                return await _unitOfWork.GetRepository<Product>().GetAllAsync();
-            }
-            catch (System.Exception)
-            {
-                throw;
-            }
+            return await _unitOfWork.GetRepository<Product>().GetAllAsync();
         }
 
         public async Task<Product> GetById(int id)
         {
-            return await _unitOfWork.GetRepository<Product>().GetAsync(id);
+            return await _unitOfWork.GetRepository<Product>().GetByIdAsync(id);
         }
 
         public async Task Create(Product product)
         {
-            _unitOfWork.GetRepository<Product>().Add(product);
+            await _unitOfWork.GetRepository<Product>().AddAsync(product);
+            await _unitOfWork.CommitAsync();
+        }
+
+        public async Task Create(IEnumerable<Product> products)
+        {
+            await _unitOfWork.GetRepository<Product>().AddAsync(products);
             await _unitOfWork.CommitAsync();
         }
 
         public async Task<bool> Update(Product product)
         {
-            if (await _unitOfWork.GetRepository<Product>().Exists(p => p.Id == product.Id))
+            if (await _unitOfWork.GetRepository<Product>().Exist(p => p.Id == product.Id))
             {
                 _unitOfWork.GetRepository<Product>().Update(product);
                 await _unitOfWork.CommitAsync();
@@ -53,11 +52,11 @@ namespace ProductCatalog.Application.Services
 
         public async Task<bool> Delete(int id)
         {
-            var entityToDelete = await _unitOfWork.GetRepository<Product>().GetAsync(id);
+            var entityToDelete = await _unitOfWork.GetRepository<Product>().GetByIdAsync(id);
 
             if (entityToDelete != null)
             {
-                _unitOfWork.GetRepository<Product>().Remove(entityToDelete);
+                _unitOfWork.GetRepository<Product>().Delete(entityToDelete);
                 await _unitOfWork.CommitAsync();
 
                 return true;

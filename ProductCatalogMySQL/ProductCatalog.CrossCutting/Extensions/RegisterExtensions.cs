@@ -37,16 +37,16 @@ namespace ProductCatalog.CrossCutting.Extensions
 
         public ServiceCollectionBuilder AddDbContexts(string connectionString)
         {
-            var connStr = string.Format(connectionString,
-                                        args: [
-                                            Environment.GetEnvironmentVariable("db_uid"),
-                                            Environment.GetEnvironmentVariable("db_pwd"),
-                                            Environment.GetEnvironmentVariable("db")
-                                        ]);
+            // var connStr = string.Format(connectionString,
+            //                             args: [
+            //                                 Environment.GetEnvironmentVariable("db_uid"),
+            //                                 Environment.GetEnvironmentVariable("db_pwd"),
+            //                                 Environment.GetEnvironmentVariable("db")
+            //                             ]);
 
             _services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseMySql(connStr, ServerVersion.AutoDetect(connStr));
+                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
             });
 
             return this;

@@ -34,7 +34,7 @@ namespace ProductCatalog.API.Controllers
                 return Ok(product);
         }
 
-        [HttpPost]
+        [HttpPost("Add")]
         public async Task<IActionResult> Post([FromBody] Product product)
         {
             try
@@ -45,6 +45,26 @@ namespace ProductCatalog.API.Controllers
                 await _productService.Create(product);
 
                 return Ok(product);
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest($"Falha ao executar operação de inclusão: {ex.StackTrace}");
+            }
+        }
+
+        [HttpPost()]
+        public async Task<IActionResult> Post([FromBody] IEnumerable<Product> products)
+        {
+            try
+            {
+                if (products == null || !products.Any())
+                {
+                    return BadRequest("Não foram informados produtos.");
+                }
+
+                await _productService.Create(products);
+
+                return Ok(products);
             }
             catch (System.Exception ex)
             {

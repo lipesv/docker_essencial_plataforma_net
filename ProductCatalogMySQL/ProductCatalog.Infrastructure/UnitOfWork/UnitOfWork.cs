@@ -1,49 +1,63 @@
-using Microsoft.EntityFrameworkCore;
 using ProductCatalog.Domain.Core.Interfaces.Repositories;
 using ProductCatalog.Domain.Core.Interfaces.UnitOfWork;
 using ProductCatalog.Domain.Entities.Base;
+using ProductCatalog.Infrastructure.Context;
 using ProductCatalog.Infrastructure.Repositories.Base;
 
 namespace ProductCatalog.Infrastructure.UnitOfWork
 {
-    public class UnitOfWork<TContext> : IRepositoryFactory, IUnitOfWork<TContext>, IUnitOfWork
-        where TContext : DbContext, IDisposable
+    public class UnitOfWork : IUnitOfWork, IDisposable
     {
-        private Dictionary<Type, object> _repositories;
+        private bool _disposed;
+        private readonly ApplicationDbContext _context;
 
-        public UnitOfWork(TContext context)
+        private Dictionary<Type, object> repos;
+
+        public UnitOfWork(ApplicationDbContext context)
         {
-            Context = context ?? throw new ArgumentNullException(nameof(context));
+            _context = context;
         }
 
-        public GenericRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity
+        public IGenericRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity
         {
-            if (_repositories == null) _repositories = new Dictionary<Type, object>();
+            if (repos == null)
+            {
+                repos = new Dictionary<Type, object>();
+            }
 
             var type = typeof(TEntity);
+            if (!repos.ContainsKey(type))
+            {
+                repos[type] = new GenericRepository<TEntity>(_context);
+            }
 
-            if (!_repositories.ContainsKey(type)) _repositories[type] = new GenericRepository<TEntity>(Context);
-
-            return (GenericRepository<TEntity>)_repositories[type];
+            return (IGenericRepository<TEntity>)repos[type];
         }
 
-        public TContext Context { get; }
-
-        public int SaveChanges()
+        /// <returns>The number of objects in an Added, Modified, or Deleted state</returns>
+        public int Commit()
         {
-            return Context.SaveChanges();
+            return _context.SaveChanges();
+        }
+        
+        public async Task<int> CommitAsync()
+        {
+            return await _context.SaveChangesAsync(CancellationToken.None);
         }
 
-        public async Task SaveSaveChangesAsync()
+        protected virtual void Dispose(bool disposing)
         {
-            await Context.SaveChangesAsync();
+            if (!_disposed && disposing)
+            {
+                _context.Dispose();
+            }
+            this._disposed = true;
         }
 
         public void Dispose()
         {
-            Context?.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
-
-        
     }
 }

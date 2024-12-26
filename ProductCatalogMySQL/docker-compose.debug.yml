@@ -4,27 +4,25 @@ version: '3.4'
 
 services:
   productcatalogapi:
-    container_name: api_product_mysql
-    image: api_product_mysql:dev
+    image: productcatalogapi
     build:
       context: .
       dockerfile: ProductCatalog.API/Dockerfile
       args:
         - configuration=Debug
     ports:
-      - 5264:5264
+      - 5164:5164
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - db_uid=root
-      - db_pwd=secret
-      - db=ProductsDb
     volumes:
-      - ~/.vsdbg:/remote_debugger:rw
+      - ~/.vsdbg:c:\remote_debugger:rw
     depends_on:
       - db
   db:
-    image: mysql
     container_name: db_dev
+    image: mysql:9.1.0
+    ports:
+      - 3306:3306
     environment:
       - MYSQL_ROOT_PASSWORD=secret
     volumes:

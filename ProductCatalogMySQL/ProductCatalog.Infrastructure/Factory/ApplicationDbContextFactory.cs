@@ -16,15 +16,10 @@ namespace ProductCatalog.Infrastructure.Factory
 
             // Criando o DbContextOptionsBuilder manualmente
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
+
             // cria a connection string. 
             // requer a connectionstring no appsettings.json
-            var connectionString = string.Format(configuration.GetConnectionString("DefaultConnection"),
-                                                 args:
-                                                 [
-                                                     Environment.GetEnvironmentVariable("db_uid"),
-                                                     Environment.GetEnvironmentVariable("db_pwd"),
-                                                     Environment.GetEnvironmentVariable("db")
-                                                 ]);
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
 
             builder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 

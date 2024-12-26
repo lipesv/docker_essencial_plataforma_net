@@ -1,15 +1,14 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-nanoserver-1809 AS base
 WORKDIR /app
-EXPOSE 5264
+EXPOSE 5164
 
-ENV ASPNETCORE_URLS=http://+:5264
+ENV ASPNETCORE_URLS=http://+:5164
 
-USER app
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0-nanoserver-1809 AS build
 ARG configuration=Release
 WORKDIR /src
 COPY ["ProductCatalog.API/ProductCatalog.API.csproj", "ProductCatalog.API/"]
-RUN dotnet restore "ProductCatalog.API/ProductCatalog.API.csproj"
+RUN dotnet restore "ProductCatalog.API\ProductCatalog.API.csproj"
 COPY . .
 WORKDIR "/src/ProductCatalog.API"
 RUN dotnet build "ProductCatalog.API.csproj" -c $configuration -o /app/build
