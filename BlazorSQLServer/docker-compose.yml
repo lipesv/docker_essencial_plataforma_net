@@ -1,0 +1,27 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP.NET Core service.
+
+version: '3.4'
+
+services:
+  sqlserverdb:
+    container_name: sqlserver
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+      - 1433:1433
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Lype@5762#
+  blazorapp:
+    image: blazorsqlserverapp
+    container_name: blazor
+    build:
+      context: .
+      dockerfile: BlazorSQLServer/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - 5277:5277
+    depends_on:
+      - sqlserverdb
+networks:
+  AppNetwork:

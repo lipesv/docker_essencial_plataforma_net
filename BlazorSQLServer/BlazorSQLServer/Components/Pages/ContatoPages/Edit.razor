@@ -1,0 +1,94 @@
+@page "/contatos/edit"
+@using Microsoft.EntityFrameworkCore
+@using BlazorSQLServer.Models
+@inject IDbContextFactory<BlazorSQLServer.Data.ApplicationDbContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h2>Contato</h2>
+<hr />
+@if (Contato is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Contato" OnValidSubmit="UpdateContato" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary role="alert"/>
+                <input type="hidden" name="Contato.Id" value="@Contato.Id" />
+                <div class="mb-3">
+                    <label for="nome" class="form-label">Nome:</label>
+                    <InputText id="nome" @bind-Value="Contato.Nome" class="form-control" />
+                    <ValidationMessage For="() => Contato.Nome" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email:</label>
+                    <InputText id="email" @bind-Value="Contato.Email" class="form-control" />
+                    <ValidationMessage For="() => Contato.Email" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/contatos">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    private int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    private Contato? Contato { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        Contato ??= await context.Contatos.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (Contato is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task UpdateContato()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Attach(Contato!).State = EntityState.Modified;
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!ContatoExists(Contato!.Id))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/contatos");
+    }
+
+    private bool ContatoExists(int id)
+    {
+        using var context = DbFactory.CreateDbContext();
+        return context.Contatos.Any(e => e.Id == id);
+    }
+}
