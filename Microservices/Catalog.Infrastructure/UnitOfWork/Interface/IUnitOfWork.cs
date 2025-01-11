@@ -11,7 +11,7 @@ namespace Catalog.Infrastructure.UnitOfWork.Interface
         IRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity;
     }
 
-    public interface IUnitOfWork<TContext> : IUnitOfWork where TContext : IMongoContext
+    public interface IUnitOfWork<TContext> : IUnitOfWork where TContext : MongoContext
     {
         TContext Context { get; }
     }

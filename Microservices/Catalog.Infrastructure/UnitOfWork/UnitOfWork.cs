@@ -1,15 +1,15 @@
 using Catalog.Domain.Core.Repositories.Interfaces.Generic;
 using Catalog.Domain.Entities.Base;
+using Catalog.Infrastructure.Context;
 using Catalog.Infrastructure.Repositories.Base;
 using Catalog.Infrastructure.UnitOfWork.Interface;
-using MongoDB.GenericRepository.Interfaces;
 
 namespace Catalog.Infrastructure.UnitOfWork
 {
-    public class UnitOfWork<TContext> : IUnitOfWork<TContext>, IDisposable where TContext : IMongoContext
+    public class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext : MongoContext
     {
         private Dictionary<Type, object> _repositories;
-        private bool disposed = false;
+        private bool _disposed = false;
 
         public UnitOfWork(TContext context)
         {
@@ -36,22 +36,10 @@ namespace Catalog.Infrastructure.UnitOfWork
             return changeAmount > 0;
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!this.disposed && disposing)
-            {
-                Context?.Dispose();
-            }
-
-            this.disposed = true;
-        }
 
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            Context.Dispose();
         }
-
-
     }
 }

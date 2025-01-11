@@ -1,5 +1,6 @@
 ﻿using Catalog.Domain.Core.Settings.MongoDbSettings;
-using Microsoft.Extensions.Configuration;
+using Catalog.Domain.Entities;
+using Catalog.Infrastructure.Context.Util;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.GenericRepository.Interfaces;
@@ -12,7 +13,6 @@ namespace Catalog.Infrastructure.Context
         public IClientSessionHandle Session { get; set; }
         public MongoClient MongoClient { get; set; }
         private readonly List<Func<Task>> _commands;
-        private bool disposed = false;
 
         public MongoContext(IOptions<MongoDbSettings> configuration)
         {
@@ -47,9 +47,11 @@ namespace Catalog.Infrastructure.Context
 
             // Configure mongo (You can inject the config, just to simplify)
             MongoClient = new MongoClient(string.Format(configuration.Value.ConnectionString,
-                                                        Environment.GetEnvironmentVariable("DbContainer") ?? "localhost"));
+                                                        Environment.GetEnvironmentVariable("DB_CONTAINER") ?? "localhost"));
 
             Database = MongoClient.GetDatabase(configuration.Value.DatabaseName);
+
+            CatalogContextSeed.SeedData(Database.GetCollection<Product>(typeof(Product).Name));
         }
 
         public IMongoCollection<T> GetCollection<T>(string name)
@@ -57,19 +59,9 @@ namespace Catalog.Infrastructure.Context
             return Database.GetCollection<T>(name);
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!this.disposed && disposing)
-            {
-                this.Dispose();
-            }
-
-            this.disposed = true;
-        }
-
         public void Dispose()
         {
-            Dispose(true);
+            Session?.Dispose();
             GC.SuppressFinalize(this);
         }
 

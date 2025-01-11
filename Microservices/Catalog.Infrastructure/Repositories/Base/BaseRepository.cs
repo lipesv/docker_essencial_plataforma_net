@@ -7,11 +7,10 @@ using ServiceStack;
 
 namespace Catalog.Infrastructure.Repositories.Base
 {
-    public class BaseRepository<TEntity> : IRepository<TEntity>, IDisposable where TEntity : BaseEntity
+    public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : BaseEntity
     {
         protected readonly IMongoContext Context;
         protected readonly IMongoCollection<TEntity> DbSet;
-        private bool disposed = false;
 
         public BaseRepository(IMongoContext context)
         {
@@ -58,20 +57,9 @@ namespace Catalog.Infrastructure.Repositories.Base
             Context.AddCommand(() => DbSet.DeleteOneAsync(Builders<TEntity>.Filter.Eq("_id", objectId)));
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!this.disposed && disposing)
-            {
-                Context?.Dispose();
-            }
-
-            this.disposed = true;
-        }
-
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            Context?.Dispose();
         }
     }
 }

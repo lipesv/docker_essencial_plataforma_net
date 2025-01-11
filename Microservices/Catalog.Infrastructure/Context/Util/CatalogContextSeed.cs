@@ -3,18 +3,16 @@ using MongoDB.Driver;
 
 namespace Catalog.Infrastructure.Context.Util
 {
-    public static class CatalogContextSeed
+    public class CatalogContextSeed
     {
         public static void SeedData(IMongoCollection<Product> productCollection)
         {
             bool existProduct = productCollection.Find(p => true).Any();
-
             if (!existProduct)
             {
                 productCollection.InsertManyAsync(GetMyProducts());
             }
         }
-
         private static IEnumerable<Product> GetMyProducts()
         {
             return new List<Product>()

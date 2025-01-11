@@ -11,7 +11,7 @@ namespace Catalog.Infrastructure.Context
         public CatalogContext(IConfiguration configuration)
         {
             var connStr = string.Format(configuration["DatabaseSettings:ConnectionString"],
-                                        Environment.GetEnvironmentVariable("DbContainer") ?? "localhost");
+                                        Environment.GetEnvironmentVariable("DB_CONTAINER") ?? "localhost");
 
             var client = new MongoClient(connStr);
 

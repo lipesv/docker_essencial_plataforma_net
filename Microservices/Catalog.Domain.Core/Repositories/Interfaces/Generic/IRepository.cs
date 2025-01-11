@@ -2,7 +2,7 @@
 
 namespace Catalog.Domain.Core.Repositories.Interfaces.Generic
 {
-    public interface IRepository<TEntity> where TEntity : BaseEntity
+    public interface IRepository<TEntity> : IDisposable where TEntity : BaseEntity
     {
         void Create(TEntity obj);
         void Update(TEntity obj);

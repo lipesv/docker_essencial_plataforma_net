@@ -28,7 +28,7 @@ namespace Catalog.CrossCutting.Extensions
         public ServiceCollectionBuilder AddConfiguration(IConfiguration configuration)
         {
             _services.AddSingleton<IConfiguration>(configuration);
-            _services.Configure<MongoDbSettings>(configuration.GetSection("MongoDbSettings"));
+            _services.Configure<MongoDbSettings>(configuration.GetSection("DatabaseSettings"));
 
             return this;
         }
@@ -51,9 +51,10 @@ namespace Catalog.CrossCutting.Extensions
 
             _services.AddScoped<IProductRepository, ProductRepository>();
 
+            _services.AddScoped<MongoContext>();
             _services.AddScoped<IMongoContext, MongoContext>();
-            _services.AddScoped<IUnitOfWork, UnitOfWork<IMongoContext>>();
-            _services.AddScoped<IUnitOfWork<IMongoContext>, UnitOfWork<IMongoContext>>();
+            _services.AddScoped<IUnitOfWork, UnitOfWork<MongoContext>>();
+            _services.AddScoped<IUnitOfWork<MongoContext>, UnitOfWork<MongoContext>>();
 
             return this;
         }
