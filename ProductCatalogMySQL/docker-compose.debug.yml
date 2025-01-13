@@ -3,8 +3,8 @@
 version: '3.4'
 
 services:
-  productcatalogapi:
-    image: productcatalogapi
+  api:
+    image: productcatalog
     build:
       context: .
       dockerfile: ProductCatalog.API/Dockerfile
@@ -15,16 +15,19 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     volumes:
-      - ~/.vsdbg:c:\remote_debugger:rw
+      - ~/.vsdbg:/remote_debugger:rw
     depends_on:
       - db
   db:
-    container_name: db_dev
+    container_name: mysqldb
     image: mysql:9.1.0
     ports:
       - 3306:3306
     environment:
-      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_RANDOM_ROOT_PASSWORD=true
+      - MYSQL_USER=catalog
+      - MYSQL_PASSWORD=secret
+      - MYSQL_DATABASE=productsdb
     volumes:
       - db_data:/var/lib/mysql
 volumes:

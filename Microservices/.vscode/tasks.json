@@ -1,0 +1,181 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/Microservices.sln",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "publish",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "publish",
+                "${workspaceFolder}/Microservices.sln",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "watch",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "run",
+                "--project",
+                "${workspaceFolder}/Microservices.sln"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "type": "docker-build",
+            "label": "docker-build: debug",
+            "dependsOn": [
+                "build"
+            ],
+            "dockerBuild": {
+                "tag": "microservices:dev",
+                "target": "base",
+                "dockerfile": "${workspaceFolder}/Catalog.API/Dockerfile",
+                "context": "${workspaceFolder}",
+                "pull": true
+            },
+            "netCore": {
+                "appProject": "${workspaceFolder}/Catalog.API/Catalog.API.csproj"
+            }
+        },
+        {
+            "type": "docker-build",
+            "label": "docker-build: release",
+            "dependsOn": [
+                "build"
+            ],
+            "dockerBuild": {
+                "tag": "microservices:latest",
+                "dockerfile": "${workspaceFolder}/Catalog.API/Dockerfile",
+                "context": "${workspaceFolder}",
+                "platform": {
+                    "os": "linux",
+                    "architecture": "amd64"
+                },
+                "pull": true
+            },
+            "netCore": {
+                "appProject": "${workspaceFolder}/Catalog.API/Catalog.API.csproj"
+            }
+        },
+        {
+            "type": "docker-run",
+            "label": "docker-run: debug",
+            "dependsOn": [
+                "docker-build: debug"
+            ],
+            "dockerRun": {},
+            "netCore": {
+                "appProject": "${workspaceFolder}/Catalog.API/Catalog.API.csproj",
+                "enableDebugging": true
+            }
+        },
+        {
+            "type": "docker-run",
+            "label": "docker-run: release",
+            "dependsOn": [
+                "docker-build: release"
+            ],
+            "dockerRun": {},
+            "netCore": {
+                "appProject": "${workspaceFolder}/Catalog.API/Catalog.API.csproj"
+            }
+        },
+        {
+            "label": "docker-compose: build",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "compose",
+                "-f",
+                "${workspaceFolder}/docker-compose.debug.yml",
+                "-f",
+                "${workspaceFolder}/docker-compose.override.yml",
+                "build"
+            ],
+            "problemMatcher": [],
+            "options": {
+                "shell": {
+                    "executable": "/bin/bash",
+                    "args": [
+                        "-c"
+                    ]
+                },
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "docker-compose: up",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "compose",
+                "-f",
+                "${workspaceFolder}/docker-compose.debug.yml",
+                "-f",
+                "${workspaceFolder}/docker-compose.override.yml",
+                "up",
+                "-d"
+            ],
+            "problemMatcher": [],
+            "options": {
+                "shell": {
+                    "executable": "/bin/bash",
+                    "args": [
+                        "-c"
+                    ]
+                },
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "docker-compose: down",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "compose",
+                "down",
+                "-v"
+            ],
+            "problemMatcher": [],
+            "options": {
+                "shell": {
+                    "executable": "/bin/bash",
+                    "args": [
+                        "-c"
+                    ]
+                },
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "docker-compose: debug",
+            "dependsOn": [
+                "docker-compose: build",
+                "docker-compose: up"
+            ],
+            "type": "shell",
+            "command": "echo",
+            "args": [
+                "Docker Compose is ready for debugging"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}
