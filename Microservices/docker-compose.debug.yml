@@ -9,7 +9,7 @@ services:
     image: catalogapi:dev
     build:
       context: .
-      dockerfile: Catalog.API/Dockerfile
+      dockerfile: Microservices.Catalog/Catalog.API/Dockerfile
       args:
         - configuration=Debug
     environment:
@@ -18,3 +18,5 @@ services:
       - ~/.vsdbg:/remote_debugger:rw
 volumes:
   catalog_data:
+
+
