@@ -1,20 +1,20 @@
 ﻿using Catalog.Domain.Entities;
 using Microservices.Domain.Core.Settings.MongoDbSettings;
-using Microservices.Infrastructure.Context.Interfaces;
+using Microservices.Infrastructure.Context.Catalog.Interfaces;
 using Microservices.Infrastructure.Context.Util;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
-namespace Microservices.Infrastructure.Context
+namespace Microservices.Infrastructure.Context.Catalog
 {
-    public class MongoContext : IMongoContext
+    public class CatalogContext : ICatalogContext
     {
         private IMongoDatabase Database { get; set; }
         public IClientSessionHandle Session { get; set; }
         public MongoClient MongoClient { get; set; }
         private readonly List<Func<Task>> _commands;
 
-        public MongoContext(IOptions<MongoDbSettings> configuration)
+        public CatalogContext(IOptions<MongoDbSettings> configuration)
         {
             // Every command will be stored and it'll be processed at SaveChanges
             _commands = new List<Func<Task>>();
@@ -51,7 +51,7 @@ namespace Microservices.Infrastructure.Context
 
             Database = MongoClient.GetDatabase(configuration.Value.DatabaseName);
 
-            CatalogContextSeed.SeedData(Database.GetCollection<Product>(typeof(Product).Name));
+            ContextSeed.SeedData(Database.GetCollection<Product>(typeof(Product).Name));
         }
 
         public IMongoCollection<T> GetCollection<T>(string name)
@@ -59,15 +59,21 @@ namespace Microservices.Infrastructure.Context
             return Database.GetCollection<T>(name);
         }
 
-        public void Dispose()
-        {
-            Session?.Dispose();
-            GC.SuppressFinalize(this);
-        }
+        // public void Dispose()
+        // {
+        //     Session?.Dispose();
+        //     GC.SuppressFinalize(this);
+        // }
 
         public void AddCommand(Func<Task> func)
         {
             _commands.Add(func);
+        }
+
+        public void Dispose()
+        {
+            Session?.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

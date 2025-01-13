@@ -1,6 +1,7 @@
 using Catalog.Application.Services.Interfaces;
 using Catalog.Domain.Entities;
 using Microservices.Domain.Core.Repositories.Interfaces;
+using Microservices.Domain.Core.Repositories.Interfaces.Generic;
 using Microservices.Infrastructure.UnitOfWork.Interface;
 using MongoDB.Bson;
 
@@ -9,19 +10,23 @@ namespace Catalog.Application.Services
     public class ProductService : IProductService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IRepository<Product, string> _repository;
         private readonly IProductRepository _productRepository;
 
         public ProductService(IUnitOfWork unitOfWork, IProductRepository productRepository)
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentException(nameof(unitOfWork));
             _productRepository = productRepository ?? throw new ArgumentException(nameof(productRepository));
+
+            _repository = _unitOfWork.GetRepository<Product, string>();
+
         }
 
         public async Task<IEnumerable<Product>> GetProducts()
         {
             try
             {
-                return await _unitOfWork.GetRepository<Product>().GetAll();
+                return await _repository.GetAll();
             }
             catch (System.Exception)
             {
@@ -33,7 +38,7 @@ namespace Catalog.Application.Services
         {
             try
             {
-                return await _unitOfWork.GetRepository<Product>().GetById(id);
+                return await _repository.GetById(id);
             }
             catch (System.Exception)
             {
@@ -74,20 +79,7 @@ namespace Catalog.Application.Services
                     product.Id = ObjectId.GenerateNewId().ToString();
                 }
 
-                _unitOfWork.GetRepository<Product>().Create(product);
-                return await _unitOfWork.Commit();
-            }
-            catch (System.Exception)
-            {
-                throw;
-            }
-        }
-
-        public async Task<bool> Delete(string id)
-        {
-            try
-            {
-                _unitOfWork.GetRepository<Product>().Delete(id);
+                _repository.Add(product);
                 return await _unitOfWork.Commit();
             }
             catch (System.Exception)
@@ -100,7 +92,20 @@ namespace Catalog.Application.Services
         {
             try
             {
-                _unitOfWork.GetRepository<Product>().Update(product);
+                _repository.Update(product);
+                return await _unitOfWork.Commit();
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<bool> Delete(string id)
+        {
+            try
+            {
+                _repository.Delete(id);
                 return await _unitOfWork.Commit();
             }
             catch (System.Exception)

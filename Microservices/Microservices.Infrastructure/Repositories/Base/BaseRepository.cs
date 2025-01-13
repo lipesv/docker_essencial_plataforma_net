@@ -1,65 +1,29 @@
-﻿using Catalog.Domain.Entities.Base;
+using Catalog.Domain.Entities.Base;
 using Microservices.Domain.Core.Repositories.Interfaces.Generic;
 using Microservices.Infrastructure.Context.Interfaces;
-using MongoDB.Bson;
-using MongoDB.Driver;
-using ServiceStack;
 
-namespace Catalog.Infrastructure.Repositories.Base
+namespace Microservices.Infrastructure.Repositories.Base
 {
-    public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : BaseEntity
+    public abstract class BaseRepository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntity : class, IEntity<TKey>
     {
-        protected readonly IMongoContext Context;
-        protected readonly IMongoCollection<TEntity> DbSet;
+        protected readonly IStorageContext Context;
 
-        public BaseRepository(IMongoContext context)
+        protected BaseRepository(IStorageContext context)
         {
-            Context = context;
-            DbSet = Context.GetCollection<TEntity>(typeof(TEntity).Name);
+            Context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public async Task<TEntity> GetById(string id)
-        {
-            //ex. 5dc1039a1521eaa36835e541
+        public abstract Task<IEnumerable<TEntity>> GetAll();
 
-            var objectId = new ObjectId(id);
+        public abstract Task<TEntity> GetById(TKey id);
 
-            FilterDefinition<TEntity> filter = Builders<TEntity>.Filter.Eq("_id", objectId);
+        public abstract void Add(TEntity entity);
 
-            return await DbSet.FindAsync(filter).Result.FirstOrDefaultAsync();
+        public abstract void Update(TEntity entity);
 
-        }
+        public abstract void Delete(TKey id);
 
-        public async Task<IEnumerable<TEntity>> GetAll()
-        {
-            var all = await DbSet.FindAsync(Builders<TEntity>.Filter.Empty);
-            return await all.ToListAsync();
-        }
-
-        public virtual void Create(TEntity obj)
-        {
-            if (obj == null)
-            {
-                throw new ArgumentNullException(typeof(TEntity).Name + " object is null");
-            }
-
-            Context.AddCommand(() => DbSet.InsertOneAsync(obj));
-        }
-
-        public virtual void Update(TEntity obj)
-        {
-            Context.AddCommand(() => DbSet.ReplaceOneAsync(Builders<TEntity>.Filter.Eq("_id", obj.GetId()), obj));
-        }
-
-        public virtual void Delete(string id)
-        {
-            var objectId = new ObjectId(id);
-            Context.AddCommand(() => DbSet.DeleteOneAsync(Builders<TEntity>.Filter.Eq("_id", objectId)));
-        }
-
-        public void Dispose()
-        {
-            Context?.Dispose();
-        }
+        public abstract void Dispose();
     }
+
 }

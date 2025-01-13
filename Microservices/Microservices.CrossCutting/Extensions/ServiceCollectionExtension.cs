@@ -1,13 +1,13 @@
 using Catalog.Application.Services;
 using Catalog.Application.Services.Interfaces;
-using Catalog.Infrastructure.Repositories.Base;
 using Microservices.Domain.Core.Repositories.Interfaces;
 using Microservices.Domain.Core.Repositories.Interfaces.Generic;
 using Microservices.Domain.Core.Settings.MongoDbSettings;
 using Microservices.Domain.Core.Settings.MongoDbSettings.Interfaces;
-using Microservices.Infrastructure.Context;
-using Microservices.Infrastructure.Context.Interfaces;
+using Microservices.Infrastructure.Context.Catalog;
+using Microservices.Infrastructure.Context.Catalog.Interfaces;
 using Microservices.Infrastructure.Repositories;
+using Microservices.Infrastructure.Repositories.Base;
 using Microservices.Infrastructure.UnitOfWork;
 using Microservices.Infrastructure.UnitOfWork.Interface;
 using Microsoft.Extensions.Configuration;
@@ -47,14 +47,16 @@ namespace Catalog.CrossCutting.Extensions
 
         public ServiceCollectionBuilder AddDataBaseContext(string connectionString)
         {
-            _services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
+            _services.AddScoped(typeof(IRepository<,>), typeof(BaseRepository<,>));
 
             _services.AddScoped<IProductRepository, ProductRepository>();
 
-            _services.AddScoped<MongoContext>();
-            _services.AddScoped<IMongoContext, MongoContext>();
-            _services.AddScoped<IUnitOfWork, UnitOfWork<MongoContext>>();
-            _services.AddScoped<IUnitOfWork<MongoContext>, UnitOfWork<MongoContext>>();
+            _services.AddScoped<CatalogContext>();
+            _services.AddScoped<ICatalogContext, CatalogContext>();
+            _services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // _services.AddScoped<IUnitOfWork, UnitOfWork<MongoContext>>();
+            // _services.AddScoped<IUnitOfWork<MongoContext>, UnitOfWork<MongoContext>>();
 
             return this;
         }

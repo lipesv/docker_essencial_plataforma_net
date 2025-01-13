@@ -1,33 +1,46 @@
 using Catalog.Domain.Entities.Base;
-using Catalog.Infrastructure.Repositories.Base;
 using Microservices.Domain.Core.Repositories.Interfaces.Generic;
-using Microservices.Infrastructure.Context;
+using Microservices.Infrastructure.Context.Catalog.Interfaces;
+using Microservices.Infrastructure.Context.Interfaces;
+using Microservices.Infrastructure.Repositories.Catalog;
 using Microservices.Infrastructure.UnitOfWork.Interface;
 
 namespace Microservices.Infrastructure.UnitOfWork
 {
-    public class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext : MongoContext
+    public class UnitOfWork : IUnitOfWork
     {
         private Dictionary<Type, object> _repositories;
         private bool _disposed = false;
 
-        public UnitOfWork(TContext context)
+        public UnitOfWork(IStorageContext context)
         {
             Context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public IRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity
+        public IRepository<TEntity, TKey> GetRepository<TEntity, TKey>() where TEntity : class, IEntity<TKey>
         {
-            if (_repositories == null) _repositories = new Dictionary<Type, object>();
+            var entityType = typeof(TEntity);
 
-            var type = typeof(TEntity);
+            if (!_repositories.ContainsKey(entityType))
+            {
+                var repositoryType = Context switch
+                {
+                    ICatalogContext => typeof(CatalogRepository<,>),
+                    // SqlContext => typeof(SqlRepository<,>),
+                    _ => throw new NotSupportedException($"Unsupported context type: {Context.GetType()}")
+                };
 
-            if (!_repositories.ContainsKey(type)) _repositories[type] = new BaseRepository<TEntity>(Context);
+                var repositoryInstance = Activator.CreateInstance(
+                    repositoryType.MakeGenericType(typeof(TEntity), typeof(TKey)),
+                    Context);
 
-            return (IRepository<TEntity>)_repositories[type];
+                _repositories[entityType] = repositoryInstance;
+            }
+
+            return (IRepository<TEntity, TKey>)_repositories[entityType];
         }
 
-        public TContext Context { get; }
+        public IStorageContext Context { get; }
 
         public async Task<bool> Commit()
         {
@@ -36,10 +49,10 @@ namespace Microservices.Infrastructure.UnitOfWork
             return changeAmount > 0;
         }
 
-
         public void Dispose()
         {
             Context.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }
