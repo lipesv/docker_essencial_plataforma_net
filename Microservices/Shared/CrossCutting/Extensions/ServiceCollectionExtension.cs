@@ -46,7 +46,7 @@ namespace CrossCutting.Extensions
             return this;
         }
 
-        public ServiceCollectionBuilder AddDataBaseContext(string connectionString)
+        public ServiceCollectionBuilder AddDataBaseContext()
         {
             // Register specific repository types
             _services.AddScoped(typeof(IRepository<>), typeof(CatalogRepository<>));
@@ -80,7 +80,7 @@ namespace CrossCutting.Extensions
             new ServiceCollectionBuilder(services)
                 .AddConfiguration(configuration)
                 .AddServices()
-                .AddDataBaseContext(configuration.GetConnectionString("SqlConnection"))
+                .AddDataBaseContext()
                 .Build();
         }
     }
