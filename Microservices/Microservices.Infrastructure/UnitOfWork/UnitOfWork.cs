@@ -1,58 +1,56 @@
-using Catalog.Domain.Entities.Base;
-using Microservices.Domain.Core.Repositories.Interfaces.Generic;
-using Microservices.Infrastructure.Context.Catalog.Interfaces;
+using System.Collections.Concurrent;
+using Microservices.Domain.Core.Entities;
+using Microservices.Domain.Core.Repositories.Generic;
 using Microservices.Infrastructure.Context.Interfaces;
-using Microservices.Infrastructure.Repositories.Catalog;
+using Microservices.Infrastructure.Repositories.Base;
 using Microservices.Infrastructure.UnitOfWork.Interface;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Microservices.Infrastructure.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private Dictionary<Type, object> _repositories;
-        private bool _disposed = false;
+        private readonly ConcurrentDictionary<Type, object> _repositories;
+        private readonly IServiceProvider _serviceProvider;
 
-        public UnitOfWork(IStorageContext context)
+        public UnitOfWork(IServiceProvider serviceProvider)
         {
-            Context = context ?? throw new ArgumentNullException(nameof(context));
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+            _repositories = new ConcurrentDictionary<Type, object>(); // Initialize _repositories
         }
 
-        public IRepository<TEntity, TKey> GetRepository<TEntity, TKey>() where TEntity : class, IEntity<TKey>
+        public IRepository<TEntity> GetRepository<TEntity>() where TEntity : class, IEntity
         {
-            var entityType = typeof(TEntity);
-
-            if (!_repositories.ContainsKey(entityType))
+            return (IRepository<TEntity>)_repositories.GetOrAdd(typeof(TEntity), _ =>
             {
-                var repositoryType = Context switch
+                // Use DI to resolve the repository
+                var repository = _serviceProvider.GetService<IRepository<TEntity>>();
+                if (repository == null)
                 {
-                    ICatalogContext => typeof(CatalogRepository<,>),
-                    // SqlContext => typeof(SqlRepository<,>),
-                    _ => throw new NotSupportedException($"Unsupported context type: {Context.GetType()}")
-                };
-
-                var repositoryInstance = Activator.CreateInstance(
-                    repositoryType.MakeGenericType(typeof(TEntity), typeof(TKey)),
-                    Context);
-
-                _repositories[entityType] = repositoryInstance;
-            }
-
-            return (IRepository<TEntity, TKey>)_repositories[entityType];
+                    throw new InvalidOperationException($"No registered repository for {typeof(TEntity).Name}");
+                }
+                return repository;
+            });
         }
-
-        public IStorageContext Context { get; }
-
         public async Task<bool> Commit()
         {
-            var changeAmount = await Context.SaveChanges();
+            var context = _serviceProvider.GetRequiredService<IStorageContext>();
+            var changeAmount = await context.SaveChanges();
 
             return changeAmount > 0;
         }
 
-        public void Dispose()
-        {
-            Context.Dispose();
-            GC.SuppressFinalize(this);
-        }
+        // public void Dispose()
+        // {
+        //     if (_disposed)
+        //         return;
+
+        //     // Dispose of all services that need to be disposed of, such as MongoContext
+        //     var context = _serviceProvider.GetService<IStorageContext>();
+        //     context?.Dispose();
+
+        //     _disposed = true;
+        //     GC.SuppressFinalize(this);
+        // }
     }
 }

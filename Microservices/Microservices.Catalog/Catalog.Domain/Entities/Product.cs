@@ -1,4 +1,4 @@
-using Catalog.Domain.Entities.Base;
+using Microservices.Domain.Core.Entities;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -6,6 +6,7 @@ namespace Catalog.Domain.Entities
 {
     public class Product : IEntity<string>
     {
+
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
@@ -17,6 +18,6 @@ namespace Catalog.Domain.Entities
         public string Image { get; set; }
         public decimal Price { get; set; }
 
-
+        object IEntity.Id { get => Id; set => Id = value as string; }
     }
 }

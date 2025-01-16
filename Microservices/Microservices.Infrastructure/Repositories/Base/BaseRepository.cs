@@ -1,10 +1,10 @@
-using Catalog.Domain.Entities.Base;
-using Microservices.Domain.Core.Repositories.Interfaces.Generic;
+using Microservices.Domain.Core.Entities;
+using Microservices.Domain.Core.Repositories.Generic;
 using Microservices.Infrastructure.Context.Interfaces;
 
 namespace Microservices.Infrastructure.Repositories.Base
 {
-    public abstract class BaseRepository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntity : class, IEntity<TKey>
+    public abstract class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : class, IEntity
     {
         protected readonly IStorageContext Context;
 
@@ -14,15 +14,10 @@ namespace Microservices.Infrastructure.Repositories.Base
         }
 
         public abstract Task<IEnumerable<TEntity>> GetAll();
-
-        public abstract Task<TEntity> GetById(TKey id);
-
+        public abstract Task<TEntity> GetById(object id);
         public abstract void Add(TEntity entity);
-
         public abstract void Update(TEntity entity);
-
-        public abstract void Delete(TKey id);
-
+        public abstract void Delete(object id);
         public abstract void Dispose();
     }
 

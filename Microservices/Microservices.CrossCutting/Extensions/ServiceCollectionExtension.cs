@@ -1,13 +1,14 @@
 using Catalog.Application.Services;
 using Catalog.Application.Services.Interfaces;
-using Microservices.Domain.Core.Repositories.Interfaces;
-using Microservices.Domain.Core.Repositories.Interfaces.Generic;
+using Microservices.Domain.Core.Repositories.Generic;
 using Microservices.Domain.Core.Settings.MongoDbSettings;
 using Microservices.Domain.Core.Settings.MongoDbSettings.Interfaces;
 using Microservices.Infrastructure.Context.Catalog;
 using Microservices.Infrastructure.Context.Catalog.Interfaces;
+using Microservices.Infrastructure.Context.Interfaces;
 using Microservices.Infrastructure.Repositories;
-using Microservices.Infrastructure.Repositories.Base;
+using Microservices.Infrastructure.Repositories.Catalog;
+using Microservices.Infrastructure.Repositories.Catalog.Interface;
 using Microservices.Infrastructure.UnitOfWork;
 using Microservices.Infrastructure.UnitOfWork.Interface;
 using Microsoft.Extensions.Configuration;
@@ -47,16 +48,21 @@ namespace Catalog.CrossCutting.Extensions
 
         public ServiceCollectionBuilder AddDataBaseContext(string connectionString)
         {
-            _services.AddScoped(typeof(IRepository<,>), typeof(BaseRepository<,>));
+            // Register specific repository types
+            _services.AddScoped(typeof(IRepository<>), typeof(CatalogRepository<>));
 
+            // Register concrete repositories
             _services.AddScoped<IProductRepository, ProductRepository>();
 
-            _services.AddScoped<CatalogContext>();
-            _services.AddScoped<ICatalogContext, CatalogContext>();
-            _services.AddScoped<IUnitOfWork, UnitOfWork>();
+            // Register context classes
+            _services.AddScoped<MongoContext>();
+            _services.AddScoped<IMongoContext, MongoContext>();
 
-            // _services.AddScoped<IUnitOfWork, UnitOfWork<MongoContext>>();
-            // _services.AddScoped<IUnitOfWork<MongoContext>, UnitOfWork<MongoContext>>();
+            // Register concrete IStorageContext implementation
+            _services.AddScoped<IStorageContext, MongoContext>();
+
+            // Register UnitOfWork class
+            _services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return this;
         }

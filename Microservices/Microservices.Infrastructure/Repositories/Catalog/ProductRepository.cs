@@ -1,14 +1,14 @@
 using Catalog.Domain.Entities;
-using Microservices.Domain.Core.Repositories.Interfaces;
 using Microservices.Infrastructure.Context.Catalog.Interfaces;
-using Microservices.Infrastructure.Repositories.Catalog;
+using Microservices.Infrastructure.Repositories.Catalog.Base;
+using Microservices.Infrastructure.Repositories.Catalog.Interface;
 using MongoDB.Driver;
 
 namespace Microservices.Infrastructure.Repositories
 {
-    public class ProductRepository : CatalogRepository<Product, string>, IProductRepository
+    public class ProductRepository : CatalogRepository<Product>, IProductRepository
     {
-        public ProductRepository(ICatalogContext context) : base(context) { }
+        public ProductRepository(IMongoContext context) : base(context) { }
 
         public async Task<IEnumerable<Product>> GetByCategory(string categoryName)
         {

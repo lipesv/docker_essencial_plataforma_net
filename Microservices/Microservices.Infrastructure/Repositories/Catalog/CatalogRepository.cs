@@ -1,4 +1,4 @@
-﻿using Catalog.Domain.Entities.Base;
+﻿using Microservices.Domain.Core.Entities;
 using Microservices.Domain.Core.Enums;
 using Microservices.Infrastructure.Context.Catalog.Interfaces;
 using Microservices.Infrastructure.Helpers;
@@ -9,12 +9,12 @@ using ServiceStack;
 
 namespace Microservices.Infrastructure.Repositories.Catalog
 {
-    public class CatalogRepository<TEntity, TKey> : BaseRepository<TEntity, TKey> where TEntity : class, IEntity<TKey>
+    public class CatalogRepository<TEntity> : BaseRepository<TEntity> where TEntity : class, IEntity
     {
-        protected readonly ICatalogContext Context;
+        protected readonly IMongoContext Context;
         protected readonly IMongoCollection<TEntity> DbSet;
 
-        public CatalogRepository(ICatalogContext context) : base(context)
+        public CatalogRepository(IMongoContext context) : base(context)
         {
             Context = context;
             DbSet = Context.GetCollection<TEntity>(typeof(TEntity).Name);
@@ -27,7 +27,7 @@ namespace Microservices.Infrastructure.Repositories.Catalog
         }
 
 
-        public override async Task<TEntity> GetById(TKey id)
+        public override async Task<TEntity> GetById(object id)
         {
             var objectId = (ObjectId)KeyConverter.ConvertToStorageKey(id, StorageType.MongoDB);
 
@@ -52,7 +52,7 @@ namespace Microservices.Infrastructure.Repositories.Catalog
             Context.AddCommand(() => DbSet.ReplaceOneAsync(Builders<TEntity>.Filter.Eq("_id", entity.GetId()), entity));
         }
 
-        public override void Delete(TKey id)
+        public override void Delete(object id)
         {
             var objectId = (ObjectId)KeyConverter.ConvertToStorageKey(id, StorageType.MongoDB);
             Context.AddCommand(() => DbSet.DeleteOneAsync(Builders<TEntity>.Filter.Eq("_id", objectId)));

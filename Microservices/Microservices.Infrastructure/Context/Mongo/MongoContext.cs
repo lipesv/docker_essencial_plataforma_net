@@ -7,14 +7,15 @@ using MongoDB.Driver;
 
 namespace Microservices.Infrastructure.Context.Catalog
 {
-    public class CatalogContext : ICatalogContext
+    public class MongoContext : IMongoContext
     {
         private IMongoDatabase Database { get; set; }
         public IClientSessionHandle Session { get; set; }
         public MongoClient MongoClient { get; set; }
         private readonly List<Func<Task>> _commands;
+        private bool _disposed = false;
 
-        public CatalogContext(IOptions<MongoDbSettings> configuration)
+        public MongoContext(IOptions<MongoDbSettings> configuration)
         {
             // Every command will be stored and it'll be processed at SaveChanges
             _commands = new List<Func<Task>>();
@@ -46,8 +47,10 @@ namespace Microservices.Infrastructure.Context.Catalog
             }
 
             // Configure mongo (You can inject the config, just to simplify)
-            MongoClient = new MongoClient(string.Format(configuration.Value.ConnectionString,
-                                                        Environment.GetEnvironmentVariable("DB_CONTAINER") ?? "localhost"));
+            var connStr = string.Format(configuration.Value.ConnectionString,
+                                                Environment.GetEnvironmentVariable("DB_CONTAINER") ?? "localhost");
+
+            MongoClient = new MongoClient(connStr);
 
             Database = MongoClient.GetDatabase(configuration.Value.DatabaseName);
 
@@ -59,12 +62,6 @@ namespace Microservices.Infrastructure.Context.Catalog
             return Database.GetCollection<T>(name);
         }
 
-        // public void Dispose()
-        // {
-        //     Session?.Dispose();
-        //     GC.SuppressFinalize(this);
-        // }
-
         public void AddCommand(Func<Task> func)
         {
             _commands.Add(func);
@@ -72,8 +69,17 @@ namespace Microservices.Infrastructure.Context.Catalog
 
         public void Dispose()
         {
-            Session?.Dispose();
+            if (_disposed)
+                return;
+
+            if (Session != null)
+            {
+                Session.Dispose();
+                Session = null;
+            }
+
             GC.SuppressFinalize(this);
+            _disposed = true;
         }
     }
 }

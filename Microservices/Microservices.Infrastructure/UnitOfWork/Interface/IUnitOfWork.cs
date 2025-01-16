@@ -1,13 +1,13 @@
-using Catalog.Domain.Entities.Base;
-using Microservices.Domain.Core.Repositories.Interfaces.Generic;
+using Microservices.Domain.Core.Entities;
+using Microservices.Domain.Core.Repositories.Generic;
 using Microservices.Infrastructure.Context.Interfaces;
 
 namespace Microservices.Infrastructure.UnitOfWork.Interface
 {
-    public interface IUnitOfWork : IDisposable
+    public interface IUnitOfWork
     {
-        IStorageContext Context { get; }
         Task<bool> Commit();
-        IRepository<TEntity, TKey> GetRepository<TEntity, TKey>() where TEntity : class, IEntity<TKey>;
+        IRepository<TEntity> GetRepository<TEntity>() where TEntity : class, IEntity;
+
     }
 }

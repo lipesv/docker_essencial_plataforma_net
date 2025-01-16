@@ -1,17 +1,13 @@
-﻿using Catalog.Domain.Entities.Base;
+﻿using Microservices.Domain.Core.Entities;
 
-namespace Microservices.Domain.Core.Repositories.Interfaces.Generic
+namespace Microservices.Domain.Core.Repositories.Generic
 {
-    public interface IRepository<TEntity, TKey> : IDisposable where TEntity : class, IEntity<TKey>
+    public interface IRepository<TEntity> : IDisposable where TEntity : class, IEntity
     {
         Task<IEnumerable<TEntity>> GetAll();
-
-        Task<TEntity> GetById(TKey id);
-
+        Task<TEntity> GetById(object id);
         void Add(TEntity entity);
-
         void Update(TEntity entity);
-
-        void Delete(TKey id);
+        void Delete(object id);
     }
 }
