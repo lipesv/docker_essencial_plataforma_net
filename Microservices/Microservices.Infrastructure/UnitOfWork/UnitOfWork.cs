@@ -1,45 +1,56 @@
-using Catalog.Domain.Entities.Base;
-using Catalog.Infrastructure.Repositories.Base;
-using Microservices.Domain.Core.Repositories.Interfaces.Generic;
-using Microservices.Infrastructure.Context;
+using System.Collections.Concurrent;
+using Microservices.Domain.Core.Entities;
+using Microservices.Domain.Core.Repositories.Generic;
+using Microservices.Infrastructure.Context.Interfaces;
+using Microservices.Infrastructure.Repositories.Base;
 using Microservices.Infrastructure.UnitOfWork.Interface;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Microservices.Infrastructure.UnitOfWork
 {
-    public class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext : MongoContext
+    public class UnitOfWork : IUnitOfWork
     {
-        private Dictionary<Type, object> _repositories;
-        private bool _disposed = false;
+        private readonly ConcurrentDictionary<Type, object> _repositories;
+        private readonly IServiceProvider _serviceProvider;
 
-        public UnitOfWork(TContext context)
+        public UnitOfWork(IServiceProvider serviceProvider)
         {
-            Context = context ?? throw new ArgumentNullException(nameof(context));
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+            _repositories = new ConcurrentDictionary<Type, object>(); // Initialize _repositories
         }
 
-        public IRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity
+        public IRepository<TEntity> GetRepository<TEntity>() where TEntity : class, IEntity
         {
-            if (_repositories == null) _repositories = new Dictionary<Type, object>();
-
-            var type = typeof(TEntity);
-
-            if (!_repositories.ContainsKey(type)) _repositories[type] = new BaseRepository<TEntity>(Context);
-
-            return (IRepository<TEntity>)_repositories[type];
+            return (IRepository<TEntity>)_repositories.GetOrAdd(typeof(TEntity), _ =>
+            {
+                // Use DI to resolve the repository
+                var repository = _serviceProvider.GetService<IRepository<TEntity>>();
+                if (repository == null)
+                {
+                    throw new InvalidOperationException($"No registered repository for {typeof(TEntity).Name}");
+                }
+                return repository;
+            });
         }
-
-        public TContext Context { get; }
-
         public async Task<bool> Commit()
         {
-            var changeAmount = await Context.SaveChanges();
+            var context = _serviceProvider.GetRequiredService<IStorageContext>();
+            var changeAmount = await context.SaveChanges();
 
             return changeAmount > 0;
         }
 
+        // public void Dispose()
+        // {
+        //     if (_disposed)
+        //         return;
 
-        public void Dispose()
-        {
-            Context.Dispose();
-        }
+        //     // Dispose of all services that need to be disposed of, such as MongoContext
+        //     var context = _serviceProvider.GetService<IStorageContext>();
+        //     context?.Dispose();
+
+        //     _disposed = true;
+        //     GC.SuppressFinalize(this);
+        // }
     }
 }

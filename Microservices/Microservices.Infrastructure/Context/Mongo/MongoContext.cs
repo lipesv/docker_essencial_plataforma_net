@@ -1,11 +1,11 @@
 ﻿using Catalog.Domain.Entities;
 using Microservices.Domain.Core.Settings.MongoDbSettings;
-using Microservices.Infrastructure.Context.Interfaces;
+using Microservices.Infrastructure.Context.Catalog.Interfaces;
 using Microservices.Infrastructure.Context.Util;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
-namespace Microservices.Infrastructure.Context
+namespace Microservices.Infrastructure.Context.Catalog
 {
     public class MongoContext : IMongoContext
     {
@@ -13,6 +13,7 @@ namespace Microservices.Infrastructure.Context
         public IClientSessionHandle Session { get; set; }
         public MongoClient MongoClient { get; set; }
         private readonly List<Func<Task>> _commands;
+        private bool _disposed = false;
 
         public MongoContext(IOptions<MongoDbSettings> configuration)
         {
@@ -46,12 +47,14 @@ namespace Microservices.Infrastructure.Context
             }
 
             // Configure mongo (You can inject the config, just to simplify)
-            MongoClient = new MongoClient(string.Format(configuration.Value.ConnectionString,
-                                                        Environment.GetEnvironmentVariable("DB_CONTAINER") ?? "localhost"));
+            var connStr = string.Format(configuration.Value.ConnectionString,
+                                                Environment.GetEnvironmentVariable("DB_CONTAINER") ?? "localhost");
+
+            MongoClient = new MongoClient(connStr);
 
             Database = MongoClient.GetDatabase(configuration.Value.DatabaseName);
 
-            CatalogContextSeed.SeedData(Database.GetCollection<Product>(typeof(Product).Name));
+            ContextSeed.SeedData(Database.GetCollection<Product>(typeof(Product).Name));
         }
 
         public IMongoCollection<T> GetCollection<T>(string name)
@@ -59,15 +62,24 @@ namespace Microservices.Infrastructure.Context
             return Database.GetCollection<T>(name);
         }
 
-        public void Dispose()
-        {
-            Session?.Dispose();
-            GC.SuppressFinalize(this);
-        }
-
         public void AddCommand(Func<Task> func)
         {
             _commands.Add(func);
+        }
+
+        public void Dispose()
+        {
+            if (_disposed)
+                return;
+
+            if (Session != null)
+            {
+                Session.Dispose();
+                Session = null;
+            }
+
+            GC.SuppressFinalize(this);
+            _disposed = true;
         }
     }
 }

@@ -3,7 +3,7 @@ using MongoDB.Driver;
 
 namespace Microservices.Infrastructure.Context.Util
 {
-    public class CatalogContextSeed
+    public class ContextSeed
     {
         public static void SeedData(IMongoCollection<Product> productCollection)
         {

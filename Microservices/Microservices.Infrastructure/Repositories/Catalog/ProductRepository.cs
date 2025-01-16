@@ -1,12 +1,12 @@
 using Catalog.Domain.Entities;
-using Catalog.Infrastructure.Repositories.Base;
-using Microservices.Domain.Core.Repositories.Interfaces;
-using Microservices.Infrastructure.Context.Interfaces;
+using Microservices.Infrastructure.Context.Catalog.Interfaces;
+using Microservices.Infrastructure.Repositories.Catalog.Base;
+using Microservices.Infrastructure.Repositories.Catalog.Interface;
 using MongoDB.Driver;
 
 namespace Microservices.Infrastructure.Repositories
 {
-    public class ProductRepository : BaseRepository<Product>, IProductRepository
+    public class ProductRepository : CatalogRepository<Product>, IProductRepository
     {
         public ProductRepository(IMongoContext context) : base(context) { }
 

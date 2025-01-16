@@ -112,10 +112,8 @@
             "problemMatcher": [],
             "options": {
                 "shell": {
-                    "executable": "/bin/bash",
-                    "args": [
-                        "-c"
-                    ]
+                    "executable": "powershell.exe",
+                    "args": []
                 },
                 "cwd": "${workspaceFolder}"
             }
@@ -136,10 +134,8 @@
             "problemMatcher": [],
             "options": {
                 "shell": {
-                    "executable": "/bin/bash",
-                    "args": [
-                        "-c"
-                    ]
+                    "executable": "powershell.exe",
+                    "args": []
                 },
                 "cwd": "${workspaceFolder}"
             }
@@ -156,10 +152,8 @@
             "problemMatcher": [],
             "options": {
                 "shell": {
-                    "executable": "/bin/bash",
-                    "args": [
-                        "-c"
-                    ]
+                    "executable": "powershell.exe",
+                    "args": []
                 },
                 "cwd": "${workspaceFolder}"
             }

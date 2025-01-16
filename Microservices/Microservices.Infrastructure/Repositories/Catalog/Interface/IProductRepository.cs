@@ -1,7 +1,7 @@
 ﻿using Catalog.Domain.Entities;
-using Microservices.Domain.Core.Repositories.Interfaces.Generic;
+using Microservices.Domain.Core.Repositories.Generic;
 
-namespace Microservices.Domain.Core.Repositories.Interfaces
+namespace Microservices.Infrastructure.Repositories.Catalog.Interface
 {
     public interface IProductRepository : IRepository<Product>
     {
