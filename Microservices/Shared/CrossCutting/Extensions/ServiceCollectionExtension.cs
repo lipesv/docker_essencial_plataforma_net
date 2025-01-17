@@ -1,3 +1,4 @@
+using System.Reflection;
 using Common.CrossCutting.DependencyInjection;
 using Common.CrossCutting.DependencyInjection.Repository;
 using Common.CrossCutting.DependencyInjection.Services;
@@ -32,12 +33,32 @@ namespace Common.CrossCutting.Extensions
 
         private static T[] GetRegistrations<T>() where T : class
         {
-            // Dynamically load all implementations of the given interface (T) from the current AppDomain
-            return AppDomain.CurrentDomain.GetAssemblies()
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).ToList();
+
+            // Load assemblies from the application base directory
+            var loadedPaths = assemblies.Select(a => a.Location).ToArray();
+            var referencedPaths = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll");
+            var toLoad = referencedPaths.Where(p => !loadedPaths.Contains(p, StringComparer.OrdinalIgnoreCase)).ToList();
+
+            foreach (var path in toLoad)
+            {
+                try
+                {
+                    assemblies.Add(AppDomain.CurrentDomain.Load(AssemblyName.GetAssemblyName(path)));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Could not load assembly from path {path}: {ex.Message}");
+                }
+            }
+
+            // Find implementations of T
+            return assemblies
                 .SelectMany(a => a.GetTypes())
                 .Where(t => typeof(T).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract)
                 .Select(t => Activator.CreateInstance(t) as T)
                 .ToArray();
         }
+
     }
 }
