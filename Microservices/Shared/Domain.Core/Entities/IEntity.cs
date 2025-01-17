@@ -1,4 +1,4 @@
-namespace Domain.Core.Entities
+namespace Common.Domain.Core.Entities
 {
     public interface IEntity
     {

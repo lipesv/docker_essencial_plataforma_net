@@ -1,10 +1,9 @@
-using System.Reflection;
-using CrossCutting.DependencyInjection.Repository;
-using CrossCutting.DependencyInjection.Services;
+using Common.CrossCutting.DependencyInjection.Repository;
+using Common.CrossCutting.DependencyInjection.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CrossCutting.DependencyInjection
+namespace Common.CrossCutting.DependencyInjection
 {
     public class ServiceCollectionBuilder
     {

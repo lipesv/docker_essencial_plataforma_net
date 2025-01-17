@@ -1,7 +1,7 @@
-using Domain.Core.Enums;
+using Common.Domain.Core.Enums;
 using MongoDB.Bson;
 
-namespace Infrastructure.Helpers
+namespace Common.Infrastructure.Helpers
 {
     public static class KeyConverter
     {

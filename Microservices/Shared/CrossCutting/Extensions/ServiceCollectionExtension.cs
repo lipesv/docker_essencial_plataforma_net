@@ -1,10 +1,10 @@
-using CrossCutting.DependencyInjection;
-using CrossCutting.DependencyInjection.Repository;
-using CrossCutting.DependencyInjection.Services;
+using Common.CrossCutting.DependencyInjection;
+using Common.CrossCutting.DependencyInjection.Repository;
+using Common.CrossCutting.DependencyInjection.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CrossCutting.Extensions
+namespace Common.CrossCutting.Extensions
 {
     public static class ServiceCollectionExtension
     {

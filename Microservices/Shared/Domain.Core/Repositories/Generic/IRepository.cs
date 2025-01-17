@@ -1,6 +1,6 @@
-﻿using Domain.Core.Entities;
+﻿using Common.Domain.Core.Entities;
 
-namespace Domain.Core.Repositories.Generic
+namespace Common.Domain.Core.Repositories.Generic
 {
     public interface IRepository<TEntity> : IDisposable where TEntity : class, IEntity
     {

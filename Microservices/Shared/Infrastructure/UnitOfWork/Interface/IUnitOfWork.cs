@@ -1,7 +1,7 @@
-using Domain.Core.Entities;
-using Domain.Core.Repositories.Generic;
+using Common.Domain.Core.Entities;
+using Common.Domain.Core.Repositories.Generic;
 
-namespace Infrastructure.UnitOfWork.Interface
+namespace Common.Infrastructure.UnitOfWork.Interface
 {
     public interface IUnitOfWork
     {

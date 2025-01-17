@@ -1,8 +1,8 @@
-using Domain.Core.Entities;
-using Domain.Core.Repositories.Generic;
-using Infrastructure.Context.Interfaces;
+using Common.Domain.Core.Entities;
+using Common.Domain.Core.Repositories.Generic;
+using Common.Infrastructure.Context.Interfaces;
 
-namespace Infrastructure.Repositories.Base
+namespace Common.Infrastructure.Repositories.Base
 {
     public abstract class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : class, IEntity
     {

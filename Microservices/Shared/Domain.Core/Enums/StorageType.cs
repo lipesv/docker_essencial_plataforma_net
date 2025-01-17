@@ -1,4 +1,4 @@
-namespace Domain.Core.Enums
+namespace Common.Domain.Core.Enums
 {
     public enum StorageType
     {

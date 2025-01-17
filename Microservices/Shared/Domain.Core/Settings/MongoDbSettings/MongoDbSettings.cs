@@ -1,6 +1,6 @@
-using Domain.Core.Settings.MongoDbSettings.Interfaces;
+using Common.Domain.Core.Settings.MongoDbSettings.Interfaces;
 
-namespace Microservices.Domain.Core.Settings.MongoDbSettings
+namespace Common.Domain.Core.Settings.MongoDbSettings
 {
     public class MongoDbSettings : IMongoDbSettings
     {

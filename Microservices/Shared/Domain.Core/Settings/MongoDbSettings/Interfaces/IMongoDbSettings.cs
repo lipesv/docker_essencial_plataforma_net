@@ -1,4 +1,4 @@
-namespace Domain.Core.Settings.MongoDbSettings.Interfaces
+namespace Common.Domain.Core.Settings.MongoDbSettings.Interfaces
 {
     public interface IMongoDbSettings
     {

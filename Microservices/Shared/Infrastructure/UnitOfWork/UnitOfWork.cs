@@ -1,11 +1,11 @@
 using System.Collections.Concurrent;
-using Domain.Core.Entities;
-using Domain.Core.Repositories.Generic;
-using Infrastructure.Context.Interfaces;
-using Infrastructure.UnitOfWork.Interface;
+using Common.Domain.Core.Entities;
+using Common.Domain.Core.Repositories.Generic;
+using Common.Infrastructure.Context.Interfaces;
+using Common.Infrastructure.UnitOfWork.Interface;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Infrastructure.UnitOfWork
+namespace Common.Infrastructure.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
     {
