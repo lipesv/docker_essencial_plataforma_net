@@ -1,4 +1,6 @@
 
+using CrossCutting.Extensions;
+
 namespace Catalog.API;
 
 public class Program
@@ -7,12 +9,17 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
+        #region Add services to the container.
+
+        // Register services and repositories
+        builder.Services.AddServices(builder.Configuration);
 
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+
+        #endregion
 
         var app = builder.Build();
 

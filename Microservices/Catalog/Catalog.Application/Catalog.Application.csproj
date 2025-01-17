@@ -4,6 +4,7 @@
     <ProjectReference Include="..\Catalog.Domain\Catalog.Domain.csproj" />
     <ProjectReference Include="..\..\Shared\Domain.Core\Domain.Core.csproj" />
     <ProjectReference Include="..\..\Shared\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Shared\CrossCutting\CrossCutting.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
