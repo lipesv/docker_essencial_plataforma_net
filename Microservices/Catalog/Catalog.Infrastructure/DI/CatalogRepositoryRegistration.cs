@@ -4,16 +4,20 @@ using Catalog.Infrastructure.Repositories;
 using Catalog.Infrastructure.Repositories.Base;
 using Catalog.Infrastructure.Repositories.Interface;
 using Common.CrossCutting.DependencyInjection.Repository;
+using Common.CrossCutting.DependencyInjection.Services;
 using Common.Domain.Core.Repositories.Generic;
+using Common.Domain.Core.Settings.MongoDbSettings;
+using Common.Domain.Core.Settings.MongoDbSettings.Interfaces;
 using Common.Infrastructure.Context.Interfaces;
 using Common.Infrastructure.UnitOfWork;
 using Common.Infrastructure.UnitOfWork.Interface;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Catalog.Infrastructure.DI
 {
-    public class CatalogRepositoryRegistration : IRepositoryRegistration
+    public class CatalogRepositoryRegistration : IServiceRegistration, IRepositoryRegistration
     {
         public void RegisterRepositories(IServiceCollection services, IConfiguration configuration)
         {
@@ -32,6 +36,14 @@ namespace Catalog.Infrastructure.DI
 
             // Register UnitOfWork class
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+        }
+
+        public void RegisterServices(IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<MongoDbSettings>(configuration.GetSection("DatabaseSettings"));
+
+            services.AddSingleton<IMongoDbSettings>(sp =>
+                sp.GetRequiredService<IOptions<MongoDbSettings>>().Value);
         }
     }
 }
