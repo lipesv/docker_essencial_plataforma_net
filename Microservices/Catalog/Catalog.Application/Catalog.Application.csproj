@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
-    <ProjectReference Include="..\Catalog.Domain\Catalog.Domain.csproj" />
-    <ProjectReference Include="..\..\Shared\Domain.Core\Domain.Core.csproj" />
-    <ProjectReference Include="..\..\Shared\Infrastructure\Infrastructure.csproj" />
-    <ProjectReference Include="..\..\Shared\CrossCutting\CrossCutting.csproj" />
-  </ItemGroup>
-
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\CrossCutting\Common.CrossCutting.csproj" />
+    <ProjectReference Include="..\..\Shared\Infrastructure\Common.Infrastructure.csproj" />
+    <ProjectReference Include="..\Catalog.Domain\Catalog.Domain.csproj" />
+    <ProjectReference Include="..\Catalog.Infrastructure\Catalog.Infrastructure.csproj" />
+  </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-using Domain.Core.Entities;
+using Common.Domain.Core.Entities;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 

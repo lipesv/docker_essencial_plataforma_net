@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Catalog.Application\Catalog.Application.csproj" />
-    <ProjectReference Include="..\..\Shared\CrossCutting\CrossCutting.csproj" />
+    <ProjectReference Include="..\..\Shared\CrossCutting\Common.CrossCutting.csproj" />
   </ItemGroup>
 
 </Project>

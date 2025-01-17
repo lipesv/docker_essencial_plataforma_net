@@ -1,7 +1,7 @@
 using Catalog.Application.Services.Interfaces;
 using Catalog.Domain.Entities;
-using Infrastructure.Repositories.Catalog.Interface;
-using Infrastructure.UnitOfWork.Interface;
+using Catalog.Infrastructure.Repositories.Interface;
+using Common.Infrastructure.UnitOfWork.Interface;
 using MongoDB.Bson;
 
 namespace Catalog.Application.Services
